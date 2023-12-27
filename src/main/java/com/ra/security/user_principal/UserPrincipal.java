@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -28,6 +27,7 @@ public class UserPrincipal implements UserDetails {
     private Boolean status;
     private Date birthday; // Ngày sinh nhật của thành viên
     private String membershipLevel; // Cấp độ thành viên (Bronze, Silver, Gold, Platinum, v.v.)
+    private Integer scorePoints ;
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetails build(Users users) {
@@ -39,6 +39,7 @@ public class UserPrincipal implements UserDetails {
                 .status(users.getStatus())
                 .birthday(users.getBirthday())
                 .membershipLevel(users.getMemberLevers().name())
+                .scorePoints(users.getScorePoints())
                 .authorities(users.getRoles().stream().map(item -> new SimpleGrantedAuthority(item.getRoleName().name())).collect(Collectors.toList()))
                 .build();
         return userPrincipal;

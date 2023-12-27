@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,16 +29,19 @@ public class TimeSlotController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> create(@RequestBody TimeSlotRequest timeSlotRequest) throws CustomException {
         return new ResponseEntity<>(timeSlotService.save(timeSlotRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TimeSlotRequest timeSlotRequest) throws CustomException {
         return new ResponseEntity<>(timeSlotService.update(id, timeSlotRequest), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> delete(@PathVariable Long id) throws CustomException {
         timeSlotService.delete(id);
         String successMessage = "TimeSlot deleted successfully.";

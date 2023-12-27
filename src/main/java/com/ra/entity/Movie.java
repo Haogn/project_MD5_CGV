@@ -22,7 +22,6 @@ public class Movie {
     private Long id ;
     private String name ; // tên fim
     private String director; // đạo diễn
-    private String performer; // diễn viên
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     private Date startTime,  endTime ;

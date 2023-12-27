@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+
 @Service
 public class TimeSlotService implements ITimeSlotService {
 
@@ -38,27 +40,43 @@ public class TimeSlotService implements ITimeSlotService {
 
     @Override
     public TimeSlotResponse save(TimeSlotRequest timeSlotRequest) throws CustomException {
-        if (timeSlotRepository.existsByName(timeSlotRequest.getName())){
-            throw new CustomException("Exits TimeSlot Name") ;
+        if (timeSlotRepository.existsByName(timeSlotRequest.getName())) {
+            throw new CustomException("Exits TimeSlot Name");
         }
+
+        LocalTime startTime = timeSlotRequest.getStartTime();
+        LocalTime endTime = timeSlotRequest.getEndTime();
+
+        // Kiểm tra nếu startTime lớn hơn hoặc bằng endTime
+        if (startTime != null && endTime != null && !endTime.isAfter(startTime)) {
+            throw new CustomException("End time must be after start time");
+        }
+
         TimeSlot timeSlot = timeSlotRepository.save(timeSlotMapper.toEntity(timeSlotRequest));
         return timeSlotMapper.toTimeSlotMapper(timeSlot);
     }
 
     @Override
     public TimeSlotResponse update(Long id, TimeSlotRequest timeSlotRequest) throws CustomException {
-        TimeSlot timeSlot = timeSlotRepository.findById(id).orElseThrow(()-> new CustomException("TimeSlot Not Found"));
-        if (timeSlotRequest.getName().equalsIgnoreCase(timeSlot.getName())) {
-            throw new CustomException("Exits TimeSlot Name");
+        TimeSlot timeSlot = timeSlotRepository.findById(id).orElseThrow(() -> new CustomException("TimeSlot Not Found"));
+
+
+        LocalTime startTime = timeSlotRequest.getStartTime();
+        LocalTime endTime = timeSlotRequest.getEndTime();
+
+        // Kiểm tra nếu startTime lớn hơn hoặc bằng endTime
+        if (startTime != null && endTime != null && !endTime.isAfter(startTime)) {
+            throw new CustomException("End time must be after start time");
         }
-        Room room = roomRepository.findById(timeSlotRequest.getRoomId()).orElseThrow(() -> new CustomException("Room Not Found"));
+
         timeSlot.setId(id);
         timeSlot.setName(timeSlotRequest.getName());
-        timeSlot.setStarTime(timeSlotRequest.getStarTime());
-        timeSlot.setEndTime(timeSlot.getEndTime());
-        timeSlot.setRoom(room);
+        timeSlot.setStartTime(startTime); // Sửa thành startTime
+        timeSlot.setEndTime(endTime); // Sửa thành endTime
+
         return timeSlotMapper.toTimeSlotMapper(timeSlotRepository.save(timeSlot));
     }
+
 
     @Override
     public void delete(Long id) throws CustomException {

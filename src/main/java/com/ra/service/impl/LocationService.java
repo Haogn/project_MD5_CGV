@@ -27,7 +27,7 @@ public class LocationService implements ILocationService {
         if (name.isEmpty() || name == null) {
             locationPage = locationRepository.findAll(pageable);
         } else  {
-            locationPage = locationRepository.findAllByName(name, pageable);
+            locationPage = locationRepository.findAllByNameContainingIgnoreCase(name, pageable);
         }
         return locationPage.map(item -> locationMapper.toLocationResponse(item));
     }
@@ -50,13 +50,10 @@ public class LocationService implements ILocationService {
     @Override
     public LocationResponse update(Long id, LocationRequest locationRequest) throws CustomException {
         Location location = locationRepository.findById(id).orElseThrow(()-> new CustomException("Location Not Found")) ;
-        if (location.getName().equalsIgnoreCase(locationRequest.getName())) {
-            throw new CustomException("Exits LocationName") ;
-        }
 
         location.setId(id);
         location.setName(locationRequest.getName());
-        return locationMapper.toLocationResponse(location);
+        return locationMapper.toLocationResponse(locationRepository.save(location));
     }
 
     @Override

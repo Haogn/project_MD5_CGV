@@ -29,8 +29,9 @@ public class Users {
     private Date birthday;
     @Enumerated(EnumType.STRING)
     private MemberLevelName memberLevers ;
+    private Integer scorePoints ;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "role_detail",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -38,6 +39,5 @@ public class Users {
     )
     private Set<Roles> roles ;
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
-    private Booking booking;
+
 }

@@ -17,7 +17,6 @@ public class UserRegister {
     private String password ;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date birthday;
-    private Boolean status = true ;
     private List<String> roles;
     private String memberLever;
 }

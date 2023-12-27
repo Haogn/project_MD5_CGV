@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,16 +30,19 @@ public class TheaterController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> createTheater(@RequestBody TheaterRequest theaterRequest) throws CustomException {
         return new ResponseEntity<>(theaterService.save(theaterRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateTheater(@PathVariable Long id, @RequestBody TheaterRequest theaterRequest) throws CustomException {
         return  new ResponseEntity<>(theaterService.update(id, theaterRequest), HttpStatus.OK) ;
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteTheater(@PathVariable Long id) throws CustomException {
         theaterService.delete(id);
         String successMessage = "Theater deleted successfully.";

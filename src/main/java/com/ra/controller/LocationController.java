@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,16 +30,19 @@ public class LocationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> createLocation(@RequestBody LocationRequest locationRequest) throws CustomException {
         return new ResponseEntity<>(locationService.save(locationRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateLocation(@PathVariable Long id , @RequestBody LocationRequest locationRequest) throws CustomException {
         return new ResponseEntity<>(locationService.update(id, locationRequest), HttpStatus.OK) ;
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteLocation(@PathVariable Long id) throws CustomException {
         locationService.delete(id);
         String successMessage = "Location deleted successfully.";

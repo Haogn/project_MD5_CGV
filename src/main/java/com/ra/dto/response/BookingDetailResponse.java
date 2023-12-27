@@ -18,7 +18,10 @@ public class BookingDetailResponse {
     private String theaterName ;
     private String locationName;
     private String movieName ;
-    private Double totalAmount ;
+    private String chairName;
+    private Double discount ;
+    private Double subTotal ;
+    private Double totalAmount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date bookingDate;
     private Boolean status ;

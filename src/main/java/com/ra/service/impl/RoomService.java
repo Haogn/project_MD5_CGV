@@ -2,6 +2,7 @@ package com.ra.service.impl;
 
 import com.ra.dto.request.RoomRequest;
 import com.ra.dto.response.RoomResponse;
+import com.ra.entity.Chair;
 import com.ra.entity.Movie;
 import com.ra.entity.Room;
 import com.ra.entity.Theater;
@@ -49,22 +50,21 @@ public class RoomService implements IRoomService {
             throw new CustomException("Exits RoomName") ;
         }
         Room room = roomRepository.save(roomMapper.toEntity(roomRequest)) ;
+
         return roomMapper.toRoomResponse(room);
     }
 
     @Override
     public RoomResponse update(Long id, RoomRequest roomRequest) throws CustomException {
         Room room = roomRepository.findById(id).orElseThrow(() -> new CustomException("Room Not Found"));
-        if (roomRequest.getName().equalsIgnoreCase(room.getName())) {
-            throw new CustomException("Exits RoomName") ;
-        }
+
         Movie movie = movieRepository.findById(roomRequest.getMovieId()).orElseThrow(()-> new CustomException("Movie Not Found"));
         Theater theater = theaterRepository.findById(roomRequest.getTheaterId()).orElseThrow(() -> new CustomException("Theater Not Found"));
 
         room.setId(id);
         room.setName(roomRequest.getName());
         room.setNumberOfSeats(roomRequest.getNumberOfSeats());
-        room.setStatus(roomRequest.getStatus());
+        room.setStatus(true);
         room.setMovie(movie);
         room.setTheater(theater);
         return roomMapper.toRoomResponse(roomRepository.save(room));

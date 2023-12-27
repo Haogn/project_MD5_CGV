@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IMovieRepository extends JpaRepository<Movie , Long> {
-    Page<Movie> findAllByName(String name , Pageable pageable) ;
+    Page<Movie> findAllByNameContainingIgnoreCase(String name , Pageable pageable) ;
     Boolean existsByName(String name) ;
 }

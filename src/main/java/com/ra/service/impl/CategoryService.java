@@ -27,7 +27,7 @@ public class CategoryService implements ICategoriesService {
         if (name == null || name.isEmpty()) {
             categories = categoriesRepository.findAll(pageable);
         } else {
-            categories = categoriesRepository.findAllByName(name, pageable);
+            categories = categoriesRepository.findAllByNameContainingIgnoreCase(name, pageable);
         }
         return categories.map(item -> categoryMapper.toCategoryResponse(item));
     }
@@ -50,9 +50,7 @@ public class CategoryService implements ICategoriesService {
     @Override
     public CategoryResponse update(Long id, CategoryRequest categoryRequest) throws CustomException {
         Categories categories = categoriesRepository.findById(id).orElseThrow(() -> new CustomException("Categorise Not Found"));
-        if (!categoryRequest.getName().equalsIgnoreCase(categories.getName()) && categoriesRepository.existsByName(categoryRequest.getName())) {
-            throw new CustomException("Exits CategoryName");
-        }
+
         categories.setId(id);
         categories.setName(categoryRequest.getName());
         return categoryMapper.toCategoryResponse(categoriesRepository.save(categories));

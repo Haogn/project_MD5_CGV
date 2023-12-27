@@ -19,6 +19,8 @@ public class BookingDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Boolean status ;
+    private Double discount ;
+    private Double subTotal ;
     private Double totalAmount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
@@ -26,8 +28,12 @@ public class BookingDetail {
     @ManyToOne
     @JoinColumn(name = "chair_id")
     private Chair chair ;
+    private Long movieId ;
+    private Long roomId ;
+    private Long timeSlotId;
+    private Long theaterId ;
 
     @ManyToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @JoinColumn(name = "user_id")
+    private Users users;
 }

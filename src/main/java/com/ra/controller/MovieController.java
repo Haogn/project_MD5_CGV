@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,21 +30,25 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createMovie(@RequestBody MovieRequest movieRequest) throws CustomException {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> createMovie(@ModelAttribute MovieRequest movieRequest) throws CustomException {
         return new ResponseEntity<>(movieService.save(movieRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateMovie(@PathVariable Long id , @RequestBody MovieRequest movieRequest) throws CustomException {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> updateMovie(@PathVariable Long id , @ModelAttribute MovieRequest movieRequest) throws CustomException {
         return new ResponseEntity<>(movieService.update(id, movieRequest), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> changeMovieStatus(@PathVariable Long id,@RequestParam String newStatus) throws CustomException {
         return new ResponseEntity<>(movieService.changeMovieStatus(id, newStatus), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteMovie(@PathVariable Long id ) throws CustomException {
         movieService.delete(id);
         String successMessage = "Movie deleted successfully.";

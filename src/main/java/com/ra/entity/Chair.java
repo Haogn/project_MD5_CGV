@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "chari")
+@Table(name = "chair")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -19,7 +19,9 @@ public class Chair {
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room ;
+    private Long theaterId ;
 
-    @OneToOne(mappedBy = "chair", cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "time_slot_id")
     private TimeSlot timeSlot;
 }

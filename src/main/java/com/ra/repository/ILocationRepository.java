@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ILocationRepository extends JpaRepository<Location , Long> {
-    Page<Location> findAllByName(String name, Pageable pageable) ;
+    Page<Location> findAllByNameContainingIgnoreCase(String name, Pageable pageable) ;
     Boolean existsByName (String name) ;
 }

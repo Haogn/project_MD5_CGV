@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,16 +31,19 @@ public class CategoriesController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> createCategory(@RequestBody CategoryRequest categoryRequest) throws CustomException {
         return new ResponseEntity<>(categoriesService.save(categoryRequest), HttpStatus.CREATED) ;
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateCategory(@PathVariable Long id , @RequestBody CategoryRequest categoryRequest) throws CustomException {
        return new ResponseEntity<>(categoriesService.update(id, categoryRequest), HttpStatus.OK) ;
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id ) throws CustomException {
         categoriesService.delete(id);
         String successMessage = "Category deleted successfully.";

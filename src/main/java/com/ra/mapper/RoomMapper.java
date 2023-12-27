@@ -37,7 +37,7 @@ public class RoomMapper {
         return Room.builder()
                 .name(roomRequest.getName())
                 .numberOfSeats(roomRequest.getNumberOfSeats())
-                .status(roomRequest.getStatus())
+                .status(true)
                 .movie(movie)
                 .theater(theater)
                 .build();

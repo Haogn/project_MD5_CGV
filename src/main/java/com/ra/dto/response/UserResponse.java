@@ -18,4 +18,5 @@ public class UserResponse {
     private Date birthday;
     private List<String> roles;
     private String memberLever;
+    private Integer scorePoints ;
 }

@@ -1,20 +1,22 @@
 package com.ra.service.impl;
 
+import com.ra.dto.request.ChangePassword;
 import com.ra.dto.request.UserLogin;
 import com.ra.dto.request.UserRegister;
 import com.ra.dto.response.JwtResponse;
+import com.ra.dto.response.UserResponse;
 import com.ra.entity.*;
 import com.ra.exception.CustomException;
 import com.ra.mapper.UserMapper;
-import com.ra.repository.IBookingRepository;
 import com.ra.repository.IUserRepository;
 import com.ra.security.jwt.JwtProvider;
 import com.ra.security.user_principal.UserPrincipal;
-import com.ra.service.interfaces.IBookingService;
 import com.ra.service.interfaces.IRoleService;
 import com.ra.service.interfaces.IUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,12 +49,7 @@ public class UserService implements IUserService {
     @Autowired
     private UserMapper userMapper ;
 
-    @Autowired
-    private IBookingService bookingService ;
 
-    @Autowired
-    private IBookingRepository bookingRepository ;
-    
     @Override
     public void register(UserRegister userRegister) throws CustomException {
         // Kiểm tra xem email đã tồn tại chưa
@@ -94,8 +91,9 @@ public class UserService implements IUserService {
                         .userName(userRegister.getUserName())
                         .password(passwordEncoder.encode(userRegister.getPassword()))
                         .birthday(userRegister.getBirthday())
-                        .status(userRegister.getStatus())
+                        .status(true)
                         .roles(roles)
+                        .scorePoints(0)
                         .memberLevers(memberLevers)
                 .build()) ;
     }
@@ -125,13 +123,7 @@ public class UserService implements IUserService {
             throw new CustomException("Username or Password is incorrect");
         }
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        Users users = userRepository.findByUserName(userPrincipal.getUsername()).orElseThrow(()-> new CustomException("User Not Found"));
-        if (bookingRepository.existsByUsersId(users.getId())) {
-            // Nếu đã có đặt phòng, xử lý theo ý bạn, có thể throw exception hoặc thực hiện hành động khác tùy thuộc vào yêu cầu của bạn.
-            throw new CustomException("User already has a booking.");
-        } else {
-            Booking booking = bookingService.saveByIdUser(users.getId());
-        }
+
 
         if (!userPrincipal.getStatus()) {
             throw new CustomException("your account is blocked");
@@ -146,5 +138,51 @@ public class UserService implements IUserService {
                 .roles(userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .memberLever(userPrincipal.getMembershipLevel())
                 .build();
+    }
+
+    @Override
+    public Boolean changePassword(Long id, ChangePassword changePassword) throws CustomException {
+        Users users = userRepository.findById(id).orElseThrow(()-> new CustomException("User Not Found")) ;
+
+        if (passwordEncoder.matches(changePassword.getOldPassword(), users.getPassword())) {
+            if (changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
+                String newPass = passwordEncoder.encode(changePassword.getNewPassword());
+                users.setPassword(newPass);
+                userRepository.save(users);
+                return true ;
+            } else {
+                throw new CustomException("NewPassword does not match the elephant ConfirmPassword");
+            }
+        } else {
+            throw new CustomException("OldPassword do not match");
+        }
+    }
+
+    @Override
+    public Page<UserResponse> findAllUser(String name, Pageable pageable) {
+        Page<Users> page ;
+        if (name.isEmpty()) {
+            page = userRepository.findAll(pageable);
+        } else {
+            page = userRepository.findAllByUserNameContainingIgnoreCase(name, pageable);
+        }
+        return page.map(item -> userMapper.toUserResponse(item));
+    }
+
+    @Override
+    public UserResponse findById(Long id) throws CustomException {
+        Users users = userRepository.findById(id).orElseThrow(()-> new CustomException("User Not Found")) ;
+        return userMapper.toUserResponse(users);
+    }
+
+    @Override
+    public Boolean changeStatusUser(Long id) throws CustomException {
+        Users users = userRepository.findById(id).orElseThrow(()-> new CustomException("User Not Found")) ;
+        if (users!= null) {
+            users.setStatus(!users.getStatus());
+            userRepository.save(users);
+            return true;
+        }
+        return false ;
     }
 }

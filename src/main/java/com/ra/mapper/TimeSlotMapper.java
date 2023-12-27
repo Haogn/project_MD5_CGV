@@ -11,24 +11,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TimeSlotMapper {
-    @Autowired
-    private IRoomRepository roomRepository ;
+
     public TimeSlotResponse toTimeSlotMapper(TimeSlot timeSlot) {
         return TimeSlotResponse.builder()
                 .id(timeSlot.getId())
-                .starTime(timeSlot.getStarTime())
+                .startTime(timeSlot.getStartTime())
                 .endTime(timeSlot.getEndTime())
-                .roomName(timeSlot.getRoom().getName())
                 .build();
     }
 
     public TimeSlot toEntity(TimeSlotRequest timeSlotRequest) throws CustomException {
-        Room room = roomRepository.findById(timeSlotRequest.getRoomId()).orElseThrow(() -> new CustomException("Room Not Found"));
         return TimeSlot.builder()
                 .name(timeSlotRequest.getName())
-                .starTime(timeSlotRequest.getStarTime())
+                .startTime(timeSlotRequest.getStartTime())
                 .endTime(timeSlotRequest.getEndTime())
-                .room(room)
                 .build();
     }
 }

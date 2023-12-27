@@ -16,7 +16,6 @@ public class MovieResponse {
     private Long id ;
     private String name ; // tên fim
     private String director; // đạo diễn
-    private String performer; // diễn viên
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date startTime,  endTime ;
     private String title ; // tiêu đề

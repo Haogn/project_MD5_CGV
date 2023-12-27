@@ -17,6 +17,7 @@ public class UserMapper {
                 .birthday(users.getBirthday())
                 .roles(users.getRoles().stream().map(item -> item.getRoleName().name()).collect(Collectors.toList()))
                 .memberLever(users.getMemberLevers().name())
+                .scorePoints(users.getScorePoints())
                 .build();
     }
 }

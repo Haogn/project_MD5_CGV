@@ -6,21 +6,25 @@ import com.ra.entity.*;
 import com.ra.exception.CustomException;
 import com.ra.mapper.BookingDetailMapper;
 import com.ra.repository.*;
+import com.ra.security.user_principal.UserPrincipal;
 import com.ra.service.interfaces.IBookingDetailService;
 import com.sun.mail.imap.protocol.ListInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class BookingDetailService implements IBookingDetailService {
     @Autowired
     private IBookingDetailRepository bookingDetailRepository;
+
     @Autowired
-    private IBookingRepository bookingRepository;
+    private IUserRepository userRepository ;
 
     @Autowired
     private ITimeSlotRepository timeSlotRepository;
@@ -54,40 +58,149 @@ public class BookingDetailService implements IBookingDetailService {
         return bookingDetailMapper.toBookingDetailResponse(bookingDetail);
     }
 
+//    @Override
+//    public BookingDetailResponse save(Authentication authentication, BookingDetailRequest bookingDetailRequest) throws CustomException {
+//        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+//        Users users = userRepository.findById(userPrincipal.getId()).orElseThrow(()-> new CustomException("User Not Found"));
+//        Movie movie = movieRepository.findById(bookingDetailRequest.getMovieId()).orElseThrow(() -> new CustomException("Movie Not Found"));
+//        Location location = locationRepository.findById(bookingDetailRequest.getLocationId()).orElseThrow(() -> new CustomException("Location Not Found"));
+//        Theater theater = theaterRepository.findById(bookingDetailRequest.getTheaterId()).orElseThrow(() -> new CustomException("Theater Not Found"));
+//        Room room = roomRepository.findById(bookingDetailRequest.getRoomId()).orElseThrow(() -> new CustomException("Room Not Found"));
+//        Chair chair = chairRepository.findById(bookingDetailRequest.getChaiId()).orElseThrow(() -> new CustomException("Chair Not Found"));
+//        TimeSlot timeSlot = timeSlotRepository.findById(bookingDetailRequest.getTimeSlotId()).orElseThrow(() -> new CustomException("TimeSlot Not Found"));
+//        List<BookingDetail> list = bookingDetailRepository.findAll();
+//        // tách ra hàm riêng
+//        boolean exitsBookingDetail = false;
+//        for (BookingDetail bd : list) {
+//            if (bd.getUsers().getId() == users.getId() &&
+//                    bd.getChair().getRoom().getMovie().getId() == movie.getId() &&
+//                    bd.getChair().getRoom().getTheater().getLocation().getId() == location.getId() &&
+//                    bd.getChair().getRoom().getTheater().getId() == theater.getId() &&
+//                    bd.getChair().getRoom().getId() == room.getId() &&
+//                    bd.getChair().getTimeSlot().getId() == timeSlot.getId() &&
+//                    bd.getChair().getId() == chair.getId()) {
+//                exitsBookingDetail = true;
+//                throw new CustomException("Exits BookingDetail");
+//            }
+//        }
+//        BookingDetail bookingDetail = new BookingDetail();
+//        if (!exitsBookingDetail) {
+//            bookingDetail.setChair(chair);
+//            bookingDetail.setBookingDate(bookingDetailRequest.getBookingDate());
+//            bookingDetail.setStatus(bookingDetailRequest.getStatus());
+//        }
+//        BookingDetail createBookingDetail = bookingDetailRepository.save(bookingDetail);
+//        return BookingDetailResponse.builder()
+//                .id(createBookingDetail.getId())
+//                .timeSlotName(timeSlot.getName())
+//                .roomName(room.getName())
+//                .theaterName(theater.getName())
+//                .locationName(location.getName())
+//                .movieName(movie.getName())
+//                .totalAmount(createBookingDetail.getChair().getRoom().getMovie().getPrice())
+//                .bookingDate(createBookingDetail.getBookingDate())
+//                .status(createBookingDetail.getStatus())
+//                .build();
+//    }
+
     @Override
-    public BookingDetailResponse save(Long bookingId, Long movieId, Long locationId, Long theaterId, Long roomId, Long timesSlotId,  BookingDetailRequest bookingDetailRequest) throws CustomException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new CustomException("Booking of Customer Not Found"));
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new CustomException("Movie Not Found"));
-        Location location = locationRepository.findById(locationId).orElseThrow(() -> new CustomException("Location Not Found"));
-        Theater theater = theaterRepository.findById(theaterId).orElseThrow(() -> new CustomException("Theater Not Found"));
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new CustomException("Room Not Found"));
-        TimeSlot timeSlot = timeSlotRepository.findById(timesSlotId).orElseThrow(() -> new CustomException("TimeSlot Not Found"));
+    public BookingDetailResponse save(Authentication authentication, BookingDetailRequest bookingDetailRequest) throws CustomException {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Users users = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new CustomException("User Not Found"));
+
+        // Check for the existence of a booking detail with the specified criteria
+        if (bookingDetailRepository.existsByUsersIdAndChairRoomMovieIdAndChairRoomTheaterLocationIdAndChairRoomTheaterIdAndChairRoomIdAndChairTimeSlotIdAndChairId(
+                users.getId(),
+                bookingDetailRequest.getMovieId(),
+                bookingDetailRequest.getLocationId(),
+                bookingDetailRequest.getTheaterId(),
+                bookingDetailRequest.getRoomId(),
+                bookingDetailRequest.getTimeSlotId(),
+                bookingDetailRequest.getChaiId())) {
+            throw new CustomException("BookingDetail already exists");
+        }
+
+        // Continue with creating a new booking detail
+        Movie movie = movieRepository.findById(bookingDetailRequest.getMovieId())
+                .orElseThrow(() -> new CustomException("Movie Not Found"));
+        Location location = locationRepository.findById(bookingDetailRequest.getLocationId())
+                .orElseThrow(() -> new CustomException("Location Not Found"));
+        Theater theater = theaterRepository.findById(bookingDetailRequest.getTheaterId())
+                .orElseThrow(() -> new CustomException("Theater Not Found"));
+        Room room = roomRepository.findById(bookingDetailRequest.getRoomId())
+                .orElseThrow(() -> new CustomException("Room Not Found"));
+        Chair chair = chairRepository.findById(bookingDetailRequest.getChaiId())
+                .orElseThrow(() -> new CustomException("Chair Not Found"));
+        TimeSlot timeSlot = timeSlotRepository.findById(bookingDetailRequest.getTimeSlotId())
+                .orElseThrow(() -> new CustomException("TimeSlot Not Found"));
+
+
         List<BookingDetail> list = bookingDetailRepository.findAll();
-        boolean exitsBookingDetail = false;
+        Integer count = null ;
         for (BookingDetail bd : list) {
-            if (bd.getBooking().getId() == booking.getId() &&
-                    bd.getChair().getRoom().getMovie().getId() == movie.getId() &&
-                    bd.getChair().getRoom().getTheater().getLocation().getId() == location.getId() &&
-                    bd.getChair().getRoom().getTheater().getId() == theater.getId() &&
-                    bd.getChair().getRoom().getId() == room.getId() &&
-                    bd.getChair().getTimeSlot().getId() == timeSlot.getId()) {
-                exitsBookingDetail = true;
-                throw new CustomException("Exits BookingDetail");
+            if (bd.getStatus()){
+                count += 1 ;
             }
         }
-        BookingDetail bookingDetail = new BookingDetail();
-        if (!exitsBookingDetail) {
-            Chair chair = chairRepository.findById(bookingDetailRequest.getChaiId()).orElseThrow(() -> new CustomException("Chair Not Found"));
-            bookingDetail.setBooking(booking);
-            bookingDetail.setChair(chair);
-            bookingDetail.setBookingDate(bookingDetailRequest.getBookingDate());
-            bookingDetail.setStatus(bookingDetailRequest.getStatus());
-            bookingDetail.setStatus(bookingDetailRequest.getStatus());
+
+        if (count > 0 && count <= 10) {
+            users.setMemberLevers(MemberLevelName.BRONZE);
+        } else if (count > 10 && count <= 20) {
+            users.setMemberLevers(MemberLevelName.SILVER);
+        } else if (count > 20 && count <= 30) {
+            users.setMemberLevers(MemberLevelName.GOLD);
+        } else {
+            users.setMemberLevers(MemberLevelName.PLATINUM);
         }
+        users.setScorePoints(count);
+
+        Double discount = null;
+        Double subTotal = null;
+        Double totalAmount = null ;
+        switch (users.getMemberLevers().name()) {
+            case "BRONZE":
+                discount =( 0.0 / 100) * movie.getPrice();
+                subTotal = movie.getPrice();
+                totalAmount = subTotal - discount ;
+                break;
+            case "SILVER":
+                discount =( 3.0 / 100) * movie.getPrice();
+                subTotal = movie.getPrice();
+                totalAmount = subTotal - discount ;
+                break;
+            case "GOLD":
+                discount =( 5.0 / 100) * movie.getPrice();
+                subTotal = movie.getPrice();
+                totalAmount = subTotal - discount ;
+                break;
+            case "PLATINUM":
+                discount =( 10.0 / 100) * movie.getPrice();
+                subTotal = movie.getPrice();
+                totalAmount = subTotal - discount ;
+                break;
+
+        }
+        BookingDetail bookingDetail = new BookingDetail();
+        bookingDetail.setUsers(users);
+        bookingDetail.setChair(chair);
+        bookingDetail.setDiscount(discount);
+        bookingDetail.setSubTotal(subTotal);
+        bookingDetail.setTotalAmount(totalAmount);
+        chair.setActive(true);
+        bookingDetail.setBookingDate(new Date());
+        bookingDetail.setStatus(false);
+        bookingDetail.setMovieId(bookingDetail.getMovieId());
+        bookingDetail.setRoomId(bookingDetail.getRoomId());
+        bookingDetail.setTimeSlotId(bookingDetail.getTimeSlotId());
+        bookingDetail.setTheaterId(bookingDetail.getTheaterId());
+
         BookingDetail createBookingDetail = bookingDetailRepository.save(bookingDetail);
+
         return BookingDetailResponse.builder()
                 .id(createBookingDetail.getId())
-                .customer(createBookingDetail.getBooking().getUsers().getUserName())
+                .customer(userPrincipal.getUsername())
+                .chairName(chair.getName())
                 .timeSlotName(timeSlot.getName())
                 .roomName(room.getName())
                 .theaterName(theater.getName())
@@ -100,9 +213,23 @@ public class BookingDetailService implements IBookingDetailService {
     }
 
     @Override
-    public BookingDetailResponse cancelBookingDetail(Long id) throws CustomException {
+    public BookingDetailResponse changeStatusBookingDetail(Long id) throws CustomException {
         BookingDetail bookingDetail = bookingDetailRepository.findById(id).orElseThrow(() -> new CustomException("BookingDetail Not Found"));
-        bookingDetail.setStatus(!bookingDetail.getStatus());
-        return bookingDetailMapper.toBookingDetailResponse(bookingDetailRepository.save(bookingDetail));
+        if (!bookingDetail.getStatus()) {
+            bookingDetail.setStatus(true);
+        }
+        bookingDetailRepository.save(bookingDetail);
+        return bookingDetailMapper.toBookingDetailResponse(bookingDetail);
     }
+
+
+    @Override
+    public void cancelBookingDetail(Long id) throws CustomException {
+        BookingDetail bookingDetail = bookingDetailRepository.findById(id).orElseThrow(() -> new CustomException("BookingDetail Not Found"));
+       if (!bookingDetail.getStatus()) {
+           roomRepository.deleteById(id);
+       }
+    }
+
+
 }

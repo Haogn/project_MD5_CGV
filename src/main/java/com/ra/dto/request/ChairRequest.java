@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class ChairRequest {
     private String name ;
-    private Boolean active ;
     private Long roomId;
+    private Long timeSlotId;
+    private Long theaterId;
 }

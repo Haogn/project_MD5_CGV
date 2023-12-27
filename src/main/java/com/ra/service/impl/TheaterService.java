@@ -32,7 +32,7 @@ public class TheaterService implements ITheaterService {
         if (name == null || name.isEmpty()) {
             theaterPage = theaterRepository.findAll(pageable) ;
         } else {
-            theaterPage = theaterRepository.findAllByName(name, pageable);
+            theaterPage = theaterRepository.findAllByNameContainingIgnoreCase(name, pageable);
         }
         return theaterPage.map(item -> theaterMapper.toTheaterResponse(item));
     }
@@ -55,9 +55,7 @@ public class TheaterService implements ITheaterService {
     @Override
     public TheaterResponse update(Long id, TheaterRequest theaterRequest) throws CustomException {
         Theater theater = theaterRepository.findById(id).orElseThrow(() -> new CustomException("Theater Not Found"));
-        if (theaterRequest.getName().equalsIgnoreCase(theater.getName())) {
-            throw new CustomException("Exits TheaterName");
-        }
+
         Location location = locationRepository.findById(theaterRequest.getLocationId()).orElseThrow(()-> new CustomException("Location Not Found"));
         theater.setId(id);
         theater.setName(theaterRequest.getName());

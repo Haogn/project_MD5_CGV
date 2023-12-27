@@ -12,4 +12,6 @@ public class ChairResponse {
     private String name ;
     private Boolean active ;
     private String roomName;
+    private String timeSlotName;
+    private String theaterName;
 }
