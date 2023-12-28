@@ -134,11 +134,5 @@ public class MovieService implements IMovieService {
         return movieMapper.toMovieResponse(movieRepository.save(movie));
     }
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        Movie movie = movieRepository.findById(id).orElseThrow(()-> new CustomException("Movie Not Found"));
-        if (movie != null) {
-            movieRepository.deleteById(id);
-        }
-    }
+
 }

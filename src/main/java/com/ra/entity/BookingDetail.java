@@ -28,10 +28,10 @@ public class BookingDetail {
     @ManyToOne
     @JoinColumn(name = "chair_id")
     private Chair chair ;
-    private Long movieId ;
-    private Long roomId ;
-    private Long timeSlotId;
-    private Long theaterId ;
+//    private Long movieId ;
+//    private Long roomId ;
+//    private Long timeSlotId;
+//    private Long theaterId ;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -56,11 +56,5 @@ public class CategoryService implements ICategoriesService {
         return categoryMapper.toCategoryResponse(categoriesRepository.save(categories));
     }
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        Categories categories = categoriesRepository.findById(id).orElseThrow(() -> new CustomException("Categorise Not Found"));
-        if (categories != null) {
-            categoriesRepository.deleteById(id);
-        }
-    }
+
 }

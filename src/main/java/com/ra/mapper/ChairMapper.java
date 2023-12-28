@@ -29,21 +29,17 @@ public class ChairMapper {
                 .name(chair.getName())
                 .active(chair.getActive())
                 .roomName(chair.getRoom().getName())
-                .timeSlotName(chair.getTimeSlot().getName())
+                .timeSlotName(chair.getRoom().getTimeSlot().getName())
                 .theaterName(chair.getRoom().getTheater().getName())
                 .build();
     }
 
     public Chair toEntity(ChairRequest chairRequest) throws CustomException {
         Room room = roomRepository.findById(chairRequest.getRoomId()).orElseThrow(()-> new CustomException("Room Not Found"));
-        TimeSlot timeSlot = timeSlotRepository.findById(chairRequest.getTimeSlotId()).orElseThrow(()-> new CustomException("TimeSlot Not Found"));
-        Theater theater = theaterRepository.findById(chairRequest.getTheaterId()).orElseThrow(()-> new CustomException("Theater Not Found"));
         return Chair.builder()
                 .name(chairRequest.getName())
                 .active(false)
                 .room(room)
-                .timeSlot(timeSlot)
-                .theaterId(theater.getId())
                 .build();
     }
 

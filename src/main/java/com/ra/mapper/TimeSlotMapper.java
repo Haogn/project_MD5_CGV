@@ -15,6 +15,7 @@ public class TimeSlotMapper {
     public TimeSlotResponse toTimeSlotMapper(TimeSlot timeSlot) {
         return TimeSlotResponse.builder()
                 .id(timeSlot.getId())
+                .name(timeSlot.getName())
                 .startTime(timeSlot.getStartTime())
                 .endTime(timeSlot.getEndTime())
                 .build();

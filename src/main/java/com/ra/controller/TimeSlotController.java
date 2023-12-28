@@ -40,11 +40,4 @@ public class TimeSlotController {
         return new ResponseEntity<>(timeSlotService.update(id, timeSlotRequest), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws CustomException {
-        timeSlotService.delete(id);
-        String successMessage = "TimeSlot deleted successfully.";
-        return new ResponseEntity<>(successMessage, HttpStatus.OK);
-    }
 }

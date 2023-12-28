@@ -15,5 +15,5 @@ public interface ITheaterService {
 
     TheaterResponse update(Long id ,TheaterRequest theaterRequest) throws CustomException;
 
-    void delete(Long id) throws CustomException;
+
 }

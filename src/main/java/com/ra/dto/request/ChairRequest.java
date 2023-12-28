@@ -10,6 +10,4 @@ import lombok.*;
 public class ChairRequest {
     private String name ;
     private Long roomId;
-    private Long timeSlotId;
-    private Long theaterId;
 }

@@ -56,11 +56,5 @@ public class LocationService implements ILocationService {
         return locationMapper.toLocationResponse(locationRepository.save(location));
     }
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        Location location = locationRepository.findById(id).orElseThrow(()-> new CustomException("Location Not Found")) ;
-        if (location != null) {
-            locationRepository.deleteById(id);
-        }
-    }
+
 }

@@ -41,11 +41,5 @@ public class LocationController {
         return new ResponseEntity<>(locationService.update(id, locationRequest), HttpStatus.OK) ;
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteLocation(@PathVariable Long id) throws CustomException {
-        locationService.delete(id);
-        String successMessage = "Location deleted successfully.";
-        return new ResponseEntity<>(successMessage, HttpStatus.OK) ;
-    }
+
 }

@@ -12,4 +12,5 @@ public class RoomRequest {
     private Long numberOfSeats ;
     private Long theaterId ;
     private Long movieId ;
+    private Long timeSlotId ;
 }

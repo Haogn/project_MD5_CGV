@@ -8,6 +8,7 @@ import com.ra.entity.Room;
 import com.ra.entity.Theater;
 import com.ra.exception.CustomException;
 import com.ra.mapper.RoomMapper;
+import com.ra.repository.IChairRepository;
 import com.ra.repository.IMovieRepository;
 import com.ra.repository.IRoomRepository;
 import com.ra.repository.ITheaterRepository;
@@ -16,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class RoomService implements IRoomService {
@@ -28,6 +33,8 @@ public class RoomService implements IRoomService {
 
     @Autowired
     private ITheaterRepository theaterRepository ;
+    @Autowired
+    private IChairRepository chairRepository ;
 
     @Autowired
     private RoomMapper roomMapper ;
@@ -46,13 +53,31 @@ public class RoomService implements IRoomService {
 
     @Override
     public RoomResponse save(RoomRequest roomRequest) throws CustomException {
-        if (roomRepository.existsByName(roomRequest.getName())) {
-            throw new CustomException("Exits RoomName") ;
-        }
-        Room room = roomRepository.save(roomMapper.toEntity(roomRequest)) ;
+//        if (!roomRepository.existsByTheater_Id(roomRequest.getTheaterId())) {
+//            throw new CustomException("Theater already has a room");
+//        }
 
+        if (roomRepository.existsByNameAndMovie_IdAndTimeSlot_Id(roomRequest.getName(), roomRequest.getMovieId(), roomRequest.getTimeSlotId())) {
+            throw new CustomException("Room with the given name and movie already exists");
+        }
+
+        Room room = roomRepository.save(roomMapper.toEntity(roomRequest));
+        List<Chair> list = new ArrayList<>();
+        String strings = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        int randomLocation = random.nextInt(strings.length());
+        String name = String.valueOf(strings.charAt(randomLocation));
+        for (int i = 0; i < roomRequest.getNumberOfSeats(); i++) {
+            Chair chair = new Chair() ;
+            chair.setName(name + "-" + i);
+            chair.setActive(false);
+            chair.setRoom(room);
+            list.add(chair);
+        }
+        chairRepository.saveAll(list);
         return roomMapper.toRoomResponse(room);
     }
+
 
     @Override
     public RoomResponse update(Long id, RoomRequest roomRequest) throws CustomException {
@@ -77,11 +102,5 @@ public class RoomService implements IRoomService {
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        Room room = roomRepository.findById(id).orElseThrow(() -> new CustomException("Room Not Found"));
-        if (room != null) {
-            roomRepository.deleteById(id);
-        }
-    }
+
 }

@@ -46,11 +46,5 @@ public class RoomController {
         return new ResponseEntity<>(roomService.changeStatusRoom(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws CustomException {
-        roomService.delete(id);
-        String successMessage = "Room deleted successfully.";
-        return new ResponseEntity<>(successMessage, HttpStatus.OK) ;
-    }
+
 }

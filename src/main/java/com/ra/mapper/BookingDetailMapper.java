@@ -35,7 +35,7 @@ public class BookingDetailMapper {
         return BookingDetailResponse.builder()
                 .id(bookingDetail.getId())
                 .customer(bookingDetail.getUsers().getUserName())
-                .timeSlotName(bookingDetail.getChair().getTimeSlot().getName())
+                .timeSlotName(bookingDetail.getChair().getRoom().getTimeSlot().getName())
                 .roomName(bookingDetail.getChair().getRoom().getName())
                 .theaterName(bookingDetail.getChair().getRoom().getTheater().getName())
                 .locationName(bookingDetail.getChair().getRoom().getTheater().getLocation().getName())
@@ -49,24 +49,5 @@ public class BookingDetailMapper {
                 .build();
     }
 
-//    public BookingDetail toEntity(Authentication authentication, BookingDetailRequest bookingDetailRequest) throws CustomException {
-//        UserPrincipal userPrincipal  = (UserPrincipal) authentication.getPrincipal();
-//        Users users = userRepository.findById(userPrincipal.getId()).orElseThrow(()-> new CustomException("User Not Found"));
-//        Chair chair = chairRepository.findById(bookingDetailRequest.getChaiId()).orElseThrow(()-> new CustomException("Chair Not Found")) ;
-//        TimeSlot timeSlot = timeSlotRepository.findById(bookingDetailRequest.getTimeSlotId()).orElseThrow(()-> new CustomException("TimeSlot Not Found"));
-//        Room room = roomRepository.findById(bookingDetailRequest.getRoomId()).orElseThrow(()-> new CustomException("Room Not Found"));
-//        Theater theater = theaterRepository.findById(bookingDetailRequest.getTheaterId()).orElseThrow(()-> new CustomException("Theater Not Found"));
-//        Location location = locationRepository.findById(bookingDetailRequest.getLocationId()).orElseThrow(()-> new CustomException("Location Not Found"));
-//        Movie movie = movieRepository.findById(bookingDetailRequest.getMovieId()).orElseThrow(()-> new CustomException("Movie Not Found"));
-//        return BookingDetail.builder()
-//                .status(bookingDetailRequest.getStatus())
-//                .bookingDate(bookingDetailRequest.getBookingDate())
-//                .chair(chair)
-//                .movieId(movie.getId())
-//                .roomId(room.getId())
-//                .theaterId(timeSlot.getId())
-//                .theaterId(theater.getId())
-//                .users(users)
-//                .build();
-//    }
+
 }

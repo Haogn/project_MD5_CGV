@@ -19,9 +19,5 @@ public class Chair {
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room ;
-    private Long theaterId ;
 
-    @ManyToOne
-    @JoinColumn(name = "time_slot_id")
-    private TimeSlot timeSlot;
 }

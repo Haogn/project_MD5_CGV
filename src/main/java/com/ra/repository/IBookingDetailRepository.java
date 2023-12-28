@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IBookingDetailRepository extends JpaRepository<BookingDetail, Long> {
-    Boolean existsByUsersIdAndChairRoomMovieIdAndChairRoomTheaterLocationIdAndChairRoomTheaterIdAndChairRoomIdAndChairTimeSlotIdAndChairId(Long userId, Long movieId, Long locationId, Long theaterId, Long roomId, Long timeSlotId, Long chairId);
+//            (Long idUser,Long idMovie, Long idTheater, Long idRoom, Long idTimeSlot, Long idChair);
     Page<BookingDetail> findByStatus(Boolean status, Pageable pageable) ;
 }

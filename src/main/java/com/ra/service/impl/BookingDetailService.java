@@ -109,23 +109,9 @@ public class BookingDetailService implements IBookingDetailService {
         Users users = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new CustomException("User Not Found"));
 
-        // Check for the existence of a booking detail with the specified criteria
-        if (bookingDetailRepository.existsByUsersIdAndChairRoomMovieIdAndChairRoomTheaterLocationIdAndChairRoomTheaterIdAndChairRoomIdAndChairTimeSlotIdAndChairId(
-                users.getId(),
-                bookingDetailRequest.getMovieId(),
-                bookingDetailRequest.getLocationId(),
-                bookingDetailRequest.getTheaterId(),
-                bookingDetailRequest.getRoomId(),
-                bookingDetailRequest.getTimeSlotId(),
-                bookingDetailRequest.getChaiId())) {
-            throw new CustomException("BookingDetail already exists");
-        }
-
         // Continue with creating a new booking detail
         Movie movie = movieRepository.findById(bookingDetailRequest.getMovieId())
                 .orElseThrow(() -> new CustomException("Movie Not Found"));
-        Location location = locationRepository.findById(bookingDetailRequest.getLocationId())
-                .orElseThrow(() -> new CustomException("Location Not Found"));
         Theater theater = theaterRepository.findById(bookingDetailRequest.getTheaterId())
                 .orElseThrow(() -> new CustomException("Theater Not Found"));
         Room room = roomRepository.findById(bookingDetailRequest.getRoomId())
@@ -134,10 +120,20 @@ public class BookingDetailService implements IBookingDetailService {
                 .orElseThrow(() -> new CustomException("Chair Not Found"));
         TimeSlot timeSlot = timeSlotRepository.findById(bookingDetailRequest.getTimeSlotId())
                 .orElseThrow(() -> new CustomException("TimeSlot Not Found"));
-
-
         List<BookingDetail> list = bookingDetailRepository.findAll();
-        Integer count = null ;
+        for (BookingDetail bd : list) {
+            if (bd.getUsers().getId() == users.getId() &&
+                    bd.getChair().getRoom().getMovie().getId() == movie.getId() &&
+                    bd.getChair().getRoom().getTheater().getId() == theater.getId() &&
+                    bd.getChair().getRoom().getId() == room.getId() &&
+                    bd.getChair().getRoom().getTimeSlot().getId() == timeSlot.getId() &&
+                    bd.getChair().getId() == chair.getId()) {
+                throw new CustomException("Exits BookingDetail");
+            }
+        }
+
+
+        Integer count = 0 ;
         for (BookingDetail bd : list) {
             if (bd.getStatus()){
                 count += 1 ;
@@ -155,9 +151,9 @@ public class BookingDetailService implements IBookingDetailService {
         }
         users.setScorePoints(count);
 
-        Double discount = null;
-        Double subTotal = null;
-        Double totalAmount = null ;
+        Double discount = 0.0;
+        Double subTotal = 0.0;
+        Double totalAmount = 0.0 ;
         switch (users.getMemberLevers().name()) {
             case "BRONZE":
                 discount =( 0.0 / 100) * movie.getPrice();
@@ -190,10 +186,7 @@ public class BookingDetailService implements IBookingDetailService {
         chair.setActive(true);
         bookingDetail.setBookingDate(new Date());
         bookingDetail.setStatus(false);
-        bookingDetail.setMovieId(bookingDetail.getMovieId());
-        bookingDetail.setRoomId(bookingDetail.getRoomId());
-        bookingDetail.setTimeSlotId(bookingDetail.getTimeSlotId());
-        bookingDetail.setTheaterId(bookingDetail.getTheaterId());
+
 
         BookingDetail createBookingDetail = bookingDetailRepository.save(bookingDetail);
 
@@ -204,9 +197,11 @@ public class BookingDetailService implements IBookingDetailService {
                 .timeSlotName(timeSlot.getName())
                 .roomName(room.getName())
                 .theaterName(theater.getName())
-                .locationName(location.getName())
+                .locationName(theater.getLocation().getName())
                 .movieName(movie.getName())
-                .totalAmount(createBookingDetail.getChair().getRoom().getMovie().getPrice())
+                .discount(createBookingDetail.getDiscount())
+                .subTotal(createBookingDetail.getSubTotal())
+                .totalAmount(createBookingDetail.getTotalAmount())
                 .bookingDate(createBookingDetail.getBookingDate())
                 .status(createBookingDetail.getStatus())
                 .build();

@@ -2,6 +2,9 @@ package com.ra.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,4 +17,6 @@ public class RoomResponse {
     private Boolean status ;
     private String  theaterName ;
     private String  movieName ;
+    private String timeSlotName ;
+    private List<ChairResponse> chairResponses ;
 }

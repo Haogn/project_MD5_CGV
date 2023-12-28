@@ -44,8 +44,9 @@ public class BookingDetailController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> cancelBooking(@PathVariable Long id) throws CustomException {
         bookingDetailService.cancelBookingDetail(id);
-        String successMessage = "Category deleted successfully.";
+        String successMessage = "booking cancel success" ;
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
     }
+
 
 }

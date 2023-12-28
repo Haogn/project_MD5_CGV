@@ -12,5 +12,5 @@ public interface IRoomService {
     RoomResponse save(RoomRequest roomRequest) throws CustomException;
     RoomResponse update(Long id , RoomRequest roomRequest) throws CustomException;
     RoomResponse changeStatusRoom(Long id) throws CustomException;
-    void delete(Long id) throws CustomException;
+
 }

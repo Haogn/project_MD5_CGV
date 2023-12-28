@@ -44,49 +44,47 @@ public class ChairService implements IChairService {
         return chairMapper.toChairResponse(chair);
     }
 
-    @Override
-    public List<ChairResponse> save(ChairRequest chairRequest) throws CustomException {
-
-        Room room = roomRepository.findById(chairRequest.getRoomId()).orElseThrow(()-> new CustomException("Room Not Found"));
-        TimeSlot timeSlot = timeSlotRepository.findById(chairRequest.getTimeSlotId()).orElseThrow(()-> new CustomException("TimeSlot Not Found"));
-        Theater theater = theaterRepository.findById(chairRequest.getTheaterId()).orElseThrow(()-> new CustomException("Theater Not Found"));
-        List<Chair> list = chairRepository.findAll();
-        for (Chair c : list) {
-            if (c.getRoom().getTheater().equals(theater) && c.getRoom().equals(room) && c.getTimeSlot().equals(timeSlot)){
-                throw new CustomException("Rooms already exist in Theater and TimeSlots") ;
-            }
-            if (c.getRoom().equals(room) && c.getTimeSlot().equals(timeSlot) && c.getName().equals(chairRequest.getName())){
-                throw new CustomException("Duplicate Chair Names in Rooms and TimeSlots") ;
-            }
-        }
-
-        Long numberOfSeats = room.getNumberOfSeats();
-        List<Chair> chairs = new ArrayList<>();
-        for (int i = 0; i < numberOfSeats; i++) {
-            Chair chair = new Chair() ;
-            chair.setName(chairRequest.getName() +"-"+ i);
-            chair.setActive(false);
-            chair.setRoom(room);
-            chair.setTimeSlot(timeSlot);
-            chairs.add(chair);
-        }
-        chairRepository.saveAll(chairs);
-        return chairs.stream().map(item -> chairMapper.toChairResponse(item)).collect(Collectors.toList());
-    }
-
-    @Override
-    public ChairResponse update(Long id, ChairRequest chairRequest) throws CustomException {
-        Chair chair = chairRepository.findById(id).orElseThrow(() -> new CustomException("Chair Not Found")) ;
-
-        Room room = roomRepository.findById(chairRequest.getRoomId()).orElseThrow(()-> new CustomException("Room Not Found"));
-        TimeSlot timeSlot = timeSlotRepository.findById(chairRequest.getTimeSlotId()).orElseThrow(()-> new CustomException("TimeSlot Not Found"));
-        chair.setId(id);
-        chair.setName(chairRequest.getName());
-        chair.setActive(false);
-        chair.setRoom(room);
-        chair.setTimeSlot(timeSlot);
-        return chairMapper.toChairResponse(chairRepository.save(chair));
-    }
+//    @Override
+//    public List<ChairResponse> save(ChairRequest chairRequest) throws CustomException {
+//
+//        Room room = roomRepository.findById(chairRequest.getRoomId()).orElseThrow(()-> new CustomException("Room Not Found"));
+//        List<Chair> list = chairRepository.findAll();
+//        for (Chair c : list) {
+//            if (c.getRoom().getTheater().equals(room.getTheater()) && c.getRoom().equals(room) ){
+//                throw new CustomException("Rooms already exist in Theater") ;
+//            }
+//            if (c.getRoom().equals(room)  && c.getName().equals(chairRequest.getName())){
+//                throw new CustomException("Duplicate Chair Names in Rooms") ;
+//            }
+//        }
+//
+//        Long numberOfSeats = room.getNumberOfSeats();
+//        List<Chair> chairs = new ArrayList<>();
+//        for (int i = 0; i < numberOfSeats; i++) {
+//            Chair chair = new Chair() ;
+//            chair.setName(chairRequest.getName() +"-"+ i);
+//            chair.setActive(false);
+//
+//            chairs.add(chair);
+//        }
+//        chairRepository.saveAll(chairs);
+//        return chairs.stream().map(item -> chairMapper.toChairResponse(item)).collect(Collectors.toList());
+//
+//    }
+//
+//    @Override
+//    public ChairResponse update(Long id, ChairRequest chairRequest) throws CustomException {
+//        Chair chair = chairRepository.findById(id).orElseThrow(() -> new CustomException("Chair Not Found")) ;
+//
+//        Room room = roomRepository.findById(chairRequest.getRoomId()).orElseThrow(()-> new CustomException("Room Not Found"));
+//
+//        chair.setId(id);
+//        chair.setName(chairRequest.getName());
+//        chair.setActive(false);
+//        chair.setRoom(room);
+//        return chairMapper.toChairResponse(chairRepository.save(chair));
+//
+//    }
 
     @Override
     public ChairResponse changeStatusChair(Long id) throws CustomException {
@@ -95,11 +93,5 @@ public class ChairService implements IChairService {
         return chairMapper.toChairResponse(chairRepository.save(chair));
     }
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        Chair chair = chairRepository.findById(id).orElseThrow(() -> new CustomException("Chair Not Found")) ;
-        if (chair != null) {
-            chairRepository.deleteById(id);
-        }
-    }
+
 }

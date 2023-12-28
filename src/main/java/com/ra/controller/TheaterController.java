@@ -41,11 +41,5 @@ public class TheaterController {
         return  new ResponseEntity<>(theaterService.update(id, theaterRequest), HttpStatus.OK) ;
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteTheater(@PathVariable Long id) throws CustomException {
-        theaterService.delete(id);
-        String successMessage = "Theater deleted successfully.";
-        return new ResponseEntity<>(successMessage, HttpStatus.OK);
-    }
+
 }

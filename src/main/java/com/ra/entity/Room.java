@@ -3,6 +3,9 @@ package com.ra.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "room")
 @AllArgsConstructor
@@ -24,4 +27,10 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie ;
+
+    @ManyToOne
+    @JoinColumn(name = "time_slot_id")
+    private TimeSlot timeSlot ;
+
+
 }

@@ -14,5 +14,5 @@ public interface ILocationService {
 
     LocationResponse update(Long id , LocationRequest locationRequest) throws CustomException;
 
-    void delete(Long id) throws CustomException;
+
 }

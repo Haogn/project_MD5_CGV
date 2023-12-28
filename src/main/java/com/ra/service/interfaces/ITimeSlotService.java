@@ -14,5 +14,5 @@ public interface ITimeSlotService {
     TimeSlotResponse save(TimeSlotRequest timeSlotRequest) throws CustomException;
 
     TimeSlotResponse update(Long id , TimeSlotRequest timeSlotRequest) throws CustomException;
-    void delete(Long id) throws CustomException;
+
 }

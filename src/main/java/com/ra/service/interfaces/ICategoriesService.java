@@ -12,5 +12,5 @@ public interface ICategoriesService {
     CategoryResponse findById(Long id) throws CustomException;
     CategoryResponse save(CategoryRequest categoryRequest) throws CustomException;
     CategoryResponse update(Long id , CategoryRequest categoryRequest) throws CustomException;
-    void delete(Long id) throws CustomException;
+
 }

@@ -47,11 +47,4 @@ public class MovieController {
         return new ResponseEntity<>(movieService.changeMovieStatus(id, newStatus), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteMovie(@PathVariable Long id ) throws CustomException {
-        movieService.delete(id);
-        String successMessage = "Movie deleted successfully.";
-        return new ResponseEntity<>(successMessage, HttpStatus.OK);
-    }
 }

@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IRoomRepository extends JpaRepository<Room, Long> {
 
-   Boolean existsByName(String name) ;
+   Boolean existsByTheater_Id(Long idTheater) ;
+   Boolean existsByNameAndMovie_IdAndTimeSlot_Id(String nameRoom, Long idMovie, Long timeSlotId) ;
 }

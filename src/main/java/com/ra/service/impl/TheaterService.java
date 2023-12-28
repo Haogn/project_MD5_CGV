@@ -63,11 +63,5 @@ public class TheaterService implements ITheaterService {
         return theaterMapper.toTheaterResponse(theaterRepository.save(theater));
     }
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        Theater theater = theaterRepository.findById(id).orElseThrow(() -> new CustomException("Theater Not Found"));
-        if (theater != null) {
-            theaterRepository.deleteById(id);
-        }
-    }
+
 }

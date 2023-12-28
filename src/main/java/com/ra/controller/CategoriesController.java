@@ -42,11 +42,5 @@ public class CategoriesController {
        return new ResponseEntity<>(categoriesService.update(id, categoryRequest), HttpStatus.OK) ;
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id ) throws CustomException {
-        categoriesService.delete(id);
-        String successMessage = "Category deleted successfully.";
-         return new ResponseEntity<>(successMessage, HttpStatus.OK);
-    }
+
 }

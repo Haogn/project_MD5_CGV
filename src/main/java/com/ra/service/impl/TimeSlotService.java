@@ -40,8 +40,8 @@ public class TimeSlotService implements ITimeSlotService {
 
     @Override
     public TimeSlotResponse save(TimeSlotRequest timeSlotRequest) throws CustomException {
-        if (timeSlotRepository.existsByName(timeSlotRequest.getName())) {
-            throw new CustomException("Exits TimeSlot Name");
+        if (timeSlotRepository.existsByStartTimeAndEndTime(timeSlotRequest.getStartTime() , timeSlotRequest.getEndTime())) {
+            throw new CustomException("Exits TimeSlot");
         }
 
         LocalTime startTime = timeSlotRequest.getStartTime();
@@ -78,11 +78,5 @@ public class TimeSlotService implements ITimeSlotService {
     }
 
 
-    @Override
-    public void delete(Long id) throws CustomException {
-        TimeSlot timeSlot = timeSlotRepository.findById(id).orElseThrow(()-> new CustomException("TimeSlot Not Found"));
-        if (timeSlot != null) {
-            timeSlotRepository.deleteById(id);
-        }
-    }
+
 }

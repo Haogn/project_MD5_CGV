@@ -13,5 +13,5 @@ public interface IMovieService {
     MovieResponse update(Long id , MovieRequest movieRequest) throws CustomException;
 
     MovieResponse changeMovieStatus(Long id, String newStatus) throws CustomException;
-    void delete(Long id ) throws CustomException;
+
 }
