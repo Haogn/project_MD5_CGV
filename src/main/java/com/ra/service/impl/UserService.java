@@ -32,22 +32,22 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements IUserService {
     @Autowired
-    private IUserRepository userRepository ;
+    private IUserRepository userRepository;
 
     @Autowired
-    private IRoleService roleService ;
+    private IRoleService roleService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtProvider jwtProvider ;
+    private JwtProvider jwtProvider;
 
     @Autowired
-    private AuthenticationProvider authenticationProvider ;
+    private AuthenticationProvider authenticationProvider;
 
     @Autowired
-    private UserMapper userMapper ;
+    private UserMapper userMapper;
 
 
     @Override
@@ -83,24 +83,24 @@ public class UserService implements IUserService {
         MemberLevelName memberLevers = null;
         // neu khong co hang dc them vao , mac dinh la hang bac
         if (userRegister.getMemberLever() == null || userRegister.getMemberLever().isEmpty()) {
-            memberLevers = MemberLevelName.BRONZE; 
+            memberLevers = MemberLevelName.BRONZE;
         }
 
         userRepository.save(Users.builder()
-                        .email(userRegister.getEmail())
-                        .userName(userRegister.getUserName())
-                        .password(passwordEncoder.encode(userRegister.getPassword()))
-                        .birthday(userRegister.getBirthday())
-                        .status(true)
-                        .roles(roles)
-                        .scorePoints(0)
-                        .memberLevers(memberLevers)
-                .build()) ;
+                .email(userRegister.getEmail())
+                .userName(userRegister.getUserName())
+                .password(passwordEncoder.encode(userRegister.getPassword()))
+                .birthday(userRegister.getBirthday())
+                .status(true)
+                .roles(roles)
+                .scorePoints(0)
+                .memberLevers(memberLevers)
+                .build());
     }
 
     @Override
     public JwtResponse login(UserLogin userLogin, HttpSession session) throws CustomException {
-        Authentication authentication ;
+        Authentication authentication;
         try {
             authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getUserName(), userLogin.getPassword()));
         } catch (AuthenticationException e) {
@@ -142,14 +142,14 @@ public class UserService implements IUserService {
 
     @Override
     public Boolean changePassword(Long id, ChangePassword changePassword) throws CustomException {
-        Users users = userRepository.findById(id).orElseThrow(()-> new CustomException("User Not Found")) ;
+        Users users = userRepository.findById(id).orElseThrow(() -> new CustomException("User Not Found"));
 
         if (passwordEncoder.matches(changePassword.getOldPassword(), users.getPassword())) {
             if (changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
                 String newPass = passwordEncoder.encode(changePassword.getNewPassword());
                 users.setPassword(newPass);
                 userRepository.save(users);
-                return true ;
+                return true;
             } else {
                 throw new CustomException("NewPassword does not match the elephant ConfirmPassword");
             }
@@ -160,7 +160,7 @@ public class UserService implements IUserService {
 
     @Override
     public Page<UserResponse> findAllUser(String name, Pageable pageable) {
-        Page<Users> page ;
+        Page<Users> page;
         if (name.isEmpty()) {
             page = userRepository.findAll(pageable);
         } else {
@@ -171,18 +171,18 @@ public class UserService implements IUserService {
 
     @Override
     public UserResponse findById(Long id) throws CustomException {
-        Users users = userRepository.findById(id).orElseThrow(()-> new CustomException("User Not Found")) ;
+        Users users = userRepository.findById(id).orElseThrow(() -> new CustomException("User Not Found"));
         return userMapper.toUserResponse(users);
     }
 
     @Override
     public Boolean changeStatusUser(Long id) throws CustomException {
-        Users users = userRepository.findById(id).orElseThrow(()-> new CustomException("User Not Found")) ;
-        if (users!= null) {
-            users.setStatus(!users.getStatus());
-            userRepository.save(users);
-            return true;
+        Users users = userRepository.findById(id).orElseThrow(() -> new CustomException("User Not Found"));
+        if (users.getRoles().equals(RoleName.ROLE_ADMIN)) {
+            throw new CustomException("Admin cannot lock account");
         }
-        return false ;
+        users.setStatus(!users.getStatus());
+        userRepository.save(users);
+        return true;
     }
 }
